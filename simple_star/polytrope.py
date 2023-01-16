@@ -39,10 +39,11 @@ class Polytrope:
         if len(sol.t_events[0]):
             # If density got to 0, add a final row for that.
             assert len(sol.t_events) == 1 and len(sol.t_events[0]) == 1
-            result.insert_row(len(result),
-                              dict(r=sol.t_events[0][0] * self._r_unit,
-                                   mr=sol.y_events[0][0, 0] * self._mr_scale,
-                                   rho=max(sol.y_events[0][0, 1], 0) * self._rho_c))
+            result.insert_row(
+                len(result),
+                dict(r=sol.t_events[0][0] * self._r_unit,
+                     mr=sol.y_events[0][0, 0] * self._mr_scale,
+                     rho=max(sol.y_events[0][0, 1], 0) * self._rho_c))
         # Add column with implied pressure (from polytropic EoS).
         result['p'] = (self.k * result['rho']**self.gamma).to(u.Pa)
         return result
@@ -77,7 +78,11 @@ class Polytrope:
             # By default, just terminate if the density becomes less than 0.
             return par[1]
 
-        condition = self._condition(r, mr=par[0]*self._mr_scale, rho=par[1]*self._rho_c)
+        condition = self._condition(
+            r,
+            mr=par[0]*self._mr_scale,
+            rho=par[1]*self._rho_c
+        )
         # Cannot pass back units, so get the number for any quantity output.
         return getattr(condition, 'value', condition)
 
