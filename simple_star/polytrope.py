@@ -12,7 +12,7 @@ class Polytrope:
         self.k = k
         self.gamma = gamma
 
-    def __call__(self, rho_c, r, condition=None):
+    def integrate(self, rho_c, r, condition=None):
         self._rho_c = rho_c
         self._r_unit = r.unit
         self._condition = condition

@@ -28,8 +28,9 @@ class TestB68:
 
     def test_solution(self):
         rho_c = (2e5/u.cm**3 * self.mu * const.m_p).si
-        result = self.poly(rho_c, np.linspace(0, 20000, 201) << u.AU,
-                           condition=self.p_gt_p_ism)
+        result = self.poly.integrate(
+            rho_c, np.linspace(0, 20000, 201) << u.AU,
+            condition=self.p_gt_p_ism)
         # Test condition is used properly.
         edge = result[-1]
         assert u.isclose(edge['p'], self.p_ism)
@@ -48,7 +49,7 @@ class TestNRCDWD:
         gamma = 5/3
         k = self.k1 / (mu_e * const.m_p) ** gamma
         poly = Polytrope(k, gamma)
-        result = poly(rho_c, np.linspace(0, 0.05, 101) * u.Rsun)
+        result = poly.integrate(rho_c, np.linspace(0, 0.05, 101) * u.Rsun)
         # Check we converged
         edge = result[-1]
         assert edge["r"] < 0.05 * u.Rsun
@@ -75,7 +76,7 @@ class TestERCDWD:
         gamma = 4/3
         k = self.k2 / (mu_e * const.m_p) ** gamma
         poly = Polytrope(k, gamma)
-        result = poly(rho_c, np.linspace(0, 0.01, 101) * u.Rsun)
+        result = poly.integrate(rho_c, np.linspace(0, 0.01, 101) * u.Rsun)
         # Check we converged
         edge = result[-1]
         assert edge["r"] < 0.01 * u.Rsun

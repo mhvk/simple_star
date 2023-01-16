@@ -35,6 +35,7 @@ a medium with a given pressure.
 
     >>> import numpy as np
     >>> import astropy.units as u
+    >>> import astropy.constants as const
     >>> import matplotlib.pyplot as plt
     >>> from simple_star.polytrope import Polytrope
 
@@ -47,9 +48,12 @@ a medium with a given pressure.
     >>> poly = Polytrope(k=k, gamma=gamma)
     >>> p_ism = 2.5e-12 * u.Pa  #((0.1 / u.cm**3) * const.k_B * 1e4 * u.K).to(u.Pa)
     >>> def p_gt_p_ism(r, mr, rho):
-    ...     return poly.k*rho**poly.gamma - p_ism
-    >>> result = poly(rho_c, np.linspace(0, 20000, 201) << u.AU, condition=p_gt_p_ism)
+    ...     return k*rho**gamma - p_ism
+    ...
+    >>> result = poly.integrate(rho_c, np.linspace(0, 20000, 201) << u.AU,
+    ...                         condition=p_gt_p_ism)
     >>> plt.plot(result["r"], result["p"])
+    >>> plt.show()
 
 Do inspect the ``results`` table.  The tests are another useful place
 to get started.
