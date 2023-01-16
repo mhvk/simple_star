@@ -25,7 +25,7 @@ Installation instructions
 
 The package and its dependencies can be installed with::
 
-  pip install git+https://github.com/mhvk/simple_stars.git#egg=simple_stars
+  pip install git+https://github.com/mhvk/simple_star.git#egg=simple_star
 
 Basic examples
 ==============
