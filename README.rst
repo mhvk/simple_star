@@ -1,6 +1,6 @@
-****************************
-Semi-analytic SN lightcurves
-****************************
+*********************
+Simple Stellar Models
+*********************
 
 .. image:: http://img.shields.io/badge/powered%20by-AstroPy-orange.svg?style=flat
     :target: http://www.astropy.org
