@@ -15,16 +15,16 @@ def alpha(k, gamma, rho_c):
 
 class TestB68:
     def setup_class(self):
-        self.p_ism = 2.5e-12 * u.Pa  #((0.1 / u.cm**3) * const.k_B * 1e4 * u.K).to(u.Pa)
+        self.p_ism = 2.5e-12 * u.Pa
         self.t = 16 * u.K
-        self.mu = 1/(0.7 / 2 + 0.3 / 4)  # 70% molecular hydrogen, 30% Helium+heavier
+        # 70% molecular hydrogen, 30% Helium+heavier.
+        self.mu = 1/(0.7 / 2 + 0.3 / 4)
         self.gamma = 1
         self.k = const.k_B * self.t / (self.mu * const.m_p)
         self.poly = Polytrope(self.k, self.gamma)
 
     def p_gt_p_ism(self, r, mr, rho):
         return self.k * rho**self.gamma - self.p_ism
-
 
     def test_solution(self):
         rho_c = (2e5/u.cm**3 * self.mu * const.m_p).si
@@ -52,7 +52,7 @@ class TestNRCDWD:
         # Check we converged
         edge = result[-1]
         assert edge["r"] < 0.05 * u.Rsun
-        # Check radius, mass, central density & pressure consistent with expectations.
+        # Check radius, mass, central density & pressure consistency.
         r_scale = alpha(k, gamma, rho_c)
         assert u.isclose(edge["r"], r_scale * 3.65375, atol=3e-5*u.Rsun)
         m_scale = 4*np.pi*r_scale**3 * rho_c
