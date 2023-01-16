@@ -14,12 +14,15 @@ class Polytrope:
 
     P = K ρˠ
 
+    Here, the polytropic exponent γ is related to the polytropic
+    index n by γ = 1 + 1/n.
+
     Parameters
     ----------
     K : `~astropy.units.Quantity`
         Proportionality constant.  Should have appropriate units.
     gamma : float
-        Polytropic index.
+        Polytropic exponent.
     """
 
     def __init__(self, k, gamma):
