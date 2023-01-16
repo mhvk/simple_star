@@ -1,3 +1,5 @@
+"""Model a ball of gas with a polytropic equation of state."""
+
 import warnings
 
 import numpy as np
@@ -8,11 +10,45 @@ from scipy.integrate import solve_ivp
 
 
 class Polytrope:
+    """Model with a polytropic equation of state.
+
+    P = K ρˠ
+
+    Parameters
+    ----------
+    K : `~astropy.units.Quantity`
+        Proportionality constant.  Should have appropriate units.
+    gamma : float
+        Polytropic index.
+    """
+
     def __init__(self, k, gamma):
         self.k = k
         self.gamma = gamma
 
     def integrate(self, rho_c, r, condition=None):
+        """Integrate MC and HE from a given starting density.
+
+        Parameters
+        ----------
+        rho_c : `~astropy.units.Quantity`
+            Central density to start integration at.
+        r : `~astropy.units.Quantity`
+            Radii at which to evaluate the integral.  Radii beyond the
+            stopping condition will not be used.
+        condition : callable, optional
+            Function that tells when to stop integrating.  Will be pass on
+            ``r, mr, rho`` and should return a value that changes sign when
+            the integration should stop. By default, uses the density, i.e.,
+            integration will stop once the density becomes negative.
+
+        Returns
+        -------
+        result : `~astropy.table.QTable`
+            A table with columns ``r, mr, rho, p`` evaluated at the given
+            radii, as well as at the location where the integration stopped
+            (if that was within the range of input radii).
+        """
         self._rho_c = rho_c
         self._r_unit = r.unit
         self._condition = condition
@@ -49,12 +85,24 @@ class Polytrope:
         return result
 
     def structure_eqs(self, r, par):
-        """Mass conservation and hydrostatic equilibrium.
+        """Mass conservation and hydrostatic equilibrium (for internal use).
 
         dMᵣ/dr = 4πr²ρ
         dP/dr = -GMᵣρ/r²
 
         Latter transformed to dρ/dr by getting dP/dρ from EoS.
+
+        Parameters
+        ----------
+        r : float
+            Radius in units of ``self._r_unit``.
+        par : list of float
+            Current parameters: scaled enclosed mass and density.
+
+        Returns
+        -------
+        derivatives : list of float
+            Derivatives of scaled enclosed mass and density with radius.
         """
         if r == 0 or par[1] <= 0:
             return [0, 0]
@@ -74,6 +122,25 @@ class Polytrope:
                 (drho_dr / self._rho_c).to_value(1 / self._r_unit)]
 
     def terminate(self, r, par):
+        """Stopping condition (for internal use).
+
+        Returns the scaled density if no explicit ``condition`` was used in
+        the call to ``integrate()``.  Otherwise, calls ``condition`` with
+        ``r, mr, rho`` in physical units.
+
+        Parameters
+        ----------
+        r : float
+            Radius in units of ``self._r_unit``.
+        par : list of float
+            Current parameters: scaled enclosed mass and density.
+
+        Returns
+        -------
+        value : float
+            The value which, if it changes sign, signals that integration
+            should stop.
+        """
         if self._condition is None:
             # By default, just terminate if the density becomes less than 0.
             return par[1]
@@ -86,4 +153,6 @@ class Polytrope:
         # Cannot pass back units, so get the number for any quantity output.
         return getattr(condition, 'value', condition)
 
-    terminate.terminal = True  # If this occurs, stop integration.
+    # Signal to solve_ivp to stop integration if the termination signal
+    # changes sign.
+    terminate.terminal = True
