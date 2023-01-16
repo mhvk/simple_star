@@ -46,7 +46,7 @@ a medium with a given pressure.
     >>> gamma = 1
     >>> k = pc / rho_c ** gamma
     >>> poly = Polytrope(k=k, gamma=gamma)
-    >>> p_ism = 2.5e-12 * u.Pa  #((0.1 / u.cm**3) * const.k_B * 1e4 * u.K).to(u.Pa)
+    >>> p_ism = 2.5e-12 * u.Pa
     >>> def p_gt_p_ism(r, mr, rho):
     ...     return k*rho**gamma - p_ism
     ...
